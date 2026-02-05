@@ -1,0 +1,31 @@
+name: idcard
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  excel: ^4.0.2
+  file_picker: ^8.0.0
+  image_picker: ^1.0.7
+  pdf: ^3.10.7
+  screenshot: ^2.1.0
+  path_provider: ^2.1.2
+  flutter_riverpod: ^2.5.1
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  qr_flutter: ^4.1.0
+  lottie: ^3.0.0
+  flutter_staggered_animations: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
