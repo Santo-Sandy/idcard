@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/id_provider.dart';
-import 'teacher_front.dart';
+import '../../exports/pdf_export.dart';
+import '../../exports/image_export.dart';
+import 'teacher_flip_card.dart';
 
 class TeacherPreviewScreen extends ConsumerWidget {
   const TeacherPreviewScreen({super.key});
@@ -29,19 +31,33 @@ class TeacherPreviewScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.picture_as_pdf),
             onPressed: () async {
-              // TODO: Implement PDF export
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('PDF export coming soon!')),
-              );
+              try {
+                await PdfExporter.exportTeacherCards(teachers);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('PDF exported successfully!')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+              }
             },
           ),
           IconButton(
             icon: const Icon(Icons.image),
             onPressed: () async {
-              // TODO: Implement image export
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Image export coming soon!')),
-              );
+              try {
+                await ImageExporter.exportAllTeacherCards(teachers, []);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Images exported successfully!'),
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+              }
             },
           ),
         ],
@@ -56,7 +72,7 @@ class TeacherPreviewScreen extends ConsumerWidget {
         ),
         itemCount: teachers.length,
         itemBuilder: (context, index) {
-          return TeacherFrontCard(teacher: teachers[index]);
+          return TeacherFlipCard(teacher: teachers[index]);
         },
       ),
     );

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:file_picker/file_picker.dart';
 import 'core/providers/id_provider.dart';
 import 'features/student_id/student_preview.dart';
 import 'features/teacher_id/teacher_preview.dart';
+import 'exports/pdf_export.dart';
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));
@@ -20,25 +22,33 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1E3A8A),
+          seedColor: Colors.teal,
           brightness: Brightness.light,
         ),
         useMaterial3: true,
         textTheme: GoogleFonts.poppinsTextTheme(),
         cardTheme: CardThemeData(
-          elevation: 8,
-          shadowColor: Colors.black26,
-          shape: RoundedRectangleBorder(),
+          elevation: 12,
+          shadowColor: Colors.teal.withOpacity(0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            elevation: 4,
-            shadowColor: Colors.black26,
+            elevation: 6,
+            shadowColor: Colors.teal.withOpacity(0.3),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.teal.shade700,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.teal.withOpacity(0.3),
         ),
       ),
       home: const HomeScreen(),
@@ -248,15 +258,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () async {
-                            // TODO: Implement file picker
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'File picker implementation coming soon!',
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
+                            FilePickerResult? result = await FilePicker.platform
+                                .pickFiles(
+                                  type: FileType.custom,
+                                  allowedExtensions: ['xlsx', 'xls'],
+                                );
+
+                            if (result != null) {
+                              final file = result.files.first;
+                              if (file.bytes != null) {
+                                await ref
+                                    .read(idProvider.notifier)
+                                    .loadExcelFile(file.bytes!);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Excel file loaded successfully!',
+                                    ),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
+                            }
                           },
                           icon: const Icon(Icons.upload_file),
                           label: const Text('Choose File'),
@@ -319,16 +342,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             const SizedBox(width: 16),
                             Expanded(
                               child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // TODO: Implement export
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Export functionality coming soon!',
+                                onPressed: () async {
+                                  try {
+                                    String path;
+                                    if (idState.selectedType ==
+                                        IdType.student) {
+                                      path =
+                                          await PdfExporter.exportStudentCards(
+                                            idState.students,
+                                          );
+                                    } else {
+                                      path =
+                                          await PdfExporter.exportTeacherCards(
+                                            idState.teachers,
+                                          );
+                                    }
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('PDF exported to: $path'),
+                                        behavior: SnackBarBehavior.floating,
                                       ),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Export failed: $e'),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
                                 },
                                 icon: const Icon(Icons.download),
                                 label: const Text('Export PDF'),
@@ -403,11 +445,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             scale: _fabAnimation,
             child: FloatingActionButton.extended(
               onPressed: () {
-                // TODO: Quick actions
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Quick actions menu coming soon!'),
-                    behavior: SnackBarBehavior.floating,
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => Container(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Quick Actions',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ListTile(
+                          leading: const Icon(Icons.clear),
+                          title: const Text('Clear All Data'),
+                          subtitle: const Text(
+                            'Remove all loaded student/teacher data',
+                          ),
+                          onTap: () {
+                            ref.read(idProvider.notifier).clearData();
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Data cleared successfully!'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.info),
+                          title: const Text('About'),
+                          subtitle: const Text('App information and version'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            showAboutDialog(
+                              context: context,
+                              applicationName: 'ID Card Generator',
+                              applicationVersion: '1.0.0',
+                              applicationLegalese:
+                                  '© 2024 ID Card Generator Team',
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
