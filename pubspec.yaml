@@ -1,27 +1,36 @@
 name: idcard
-description: "A new Flutter project."
+description: "ID Card Generator App"
 publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.10.7
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  excel: ^4.0.2
-  file_picker: ^8.0.0
-  image_picker: ^1.0.7
-  pdf: ^3.10.7
-  screenshot: ^2.1.0
-  path_provider: ^2.1.2
+
+  # Core
   flutter_riverpod: ^2.5.1
   google_fonts: ^6.1.0
+
+  # UI / Animation
   flutter_animate: ^4.5.0
-  qr_flutter: ^4.1.0
   lottie: ^3.0.0
   flutter_staggered_animations: ^1.1.1
   flip_card: ^0.7.0
+
+  # Data / Files (Web-safe)
+  excel: ^4.0.2
+  pdf: ^3.10.7
+  qr_flutter: ^4.1.0
+  screenshot: ^2.1.0
+
+  # Conditional platform usage ONLY
+  file_picker: ^8.0.3
+  image_picker: ^1.0.7
+  path_provider: ^2.1.3
+  share_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:

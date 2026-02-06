@@ -5,11 +5,34 @@ import '../../exports/pdf_export.dart';
 import '../../exports/image_export.dart';
 import 'student_flip_card.dart';
 
-class StudentPreviewScreen extends ConsumerWidget {
+class StudentPreviewScreen extends ConsumerStatefulWidget {
   const StudentPreviewScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StudentPreviewScreen> createState() =>
+      _StudentPreviewScreenState();
+}
+
+class _StudentPreviewScreenState extends ConsumerState<StudentPreviewScreen> {
+  late List<GlobalKey> _cardKeys;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardKeys = [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final students = ref.watch(idProvider).students;
+    if (_cardKeys.length != students.length) {
+      _cardKeys = List.generate(students.length, (_) => GlobalKey());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final idState = ref.watch(idProvider);
     final students = idState.students;
 
@@ -47,7 +70,7 @@ class StudentPreviewScreen extends ConsumerWidget {
             icon: const Icon(Icons.image),
             onPressed: () async {
               try {
-                await ImageExporter.exportAllStudentCards(students, []);
+                await ImageExporter.exportAllStudentCards(students, _cardKeys);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Images exported successfully!'),
@@ -72,7 +95,8 @@ class StudentPreviewScreen extends ConsumerWidget {
         ),
         itemCount: students.length,
         itemBuilder: (context, index) {
-          return StudentFlipCard(student: students[index]);
+          return StudentFlipCard(
+              student: students[index], repaintKey: _cardKeys[index]);
         },
       ),
     );

@@ -4,8 +4,9 @@ import '../../data/models/student.dart';
 
 class StudentFlipCard extends StatelessWidget {
   final Student student;
+  final GlobalKey? repaintKey;
 
-  const StudentFlipCard({super.key, required this.student});
+  const StudentFlipCard({super.key, required this.student, this.repaintKey});
 
   @override
   Widget build(BuildContext context) {

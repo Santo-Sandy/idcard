@@ -4,15 +4,19 @@ import '../../data/models/teacher.dart';
 
 class TeacherFlipCard extends StatelessWidget {
   final Teacher teacher;
+  final GlobalKey? repaintKey;
 
-  const TeacherFlipCard({super.key, required this.teacher});
+  const TeacherFlipCard({super.key, required this.teacher, this.repaintKey});
 
   @override
   Widget build(BuildContext context) {
-    return FlipCard(
-      direction: FlipDirection.HORIZONTAL,
-      front: _buildFrontCard(context),
-      back: _buildBackCard(context),
+    return RepaintBoundary(
+      key: repaintKey,
+      child: FlipCard(
+        direction: FlipDirection.HORIZONTAL,
+        front: _buildFrontCard(context),
+        back: _buildBackCard(context),
+      ),
     );
   }
 

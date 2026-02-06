@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:file_picker/file_picker.dart';
 import 'core/providers/id_provider.dart';
 import 'features/student_id/student_preview.dart';
 import 'features/teacher_id/teacher_preview.dart';
 import 'exports/pdf_export.dart';
+import 'exports/image_export.dart';
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));
@@ -138,7 +138,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       children: [
                         Text(
                           'Welcome to ID Card Generator',
-                          style: Theme.of(context).textTheme.headlineSmall
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(
@@ -149,13 +151,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         const SizedBox(height: 8),
                         Text(
                           'Generate professional ID cards for students and teachers with ease',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer
-                                    .withOpacity(0.8),
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer
+                                        .withOpacity(0.8),
+                                  ),
                         ),
                       ],
                     ),
@@ -167,8 +169,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   Text(
                     '🎓 Select ID Type',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
 
                   const SizedBox(height: 16),
@@ -215,8 +217,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   Text(
                     '📁 Upload Excel File',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
 
                   const SizedBox(height: 16),
@@ -248,21 +250,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         const SizedBox(height: 8),
                         Text(
                           'Supported formats: .xls, .xlsx',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () async {
-                            FilePickerResult? result = await FilePicker.platform
-                                .pickFiles(
-                                  type: FileType.custom,
-                                  allowedExtensions: ['xlsx', 'xls'],
-                                );
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['xlsx', 'xls'],
+                            );
 
                             if (result != null) {
                               final file = result.files.first;
@@ -306,83 +308,152 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       children: [
                         Text(
                           '👀 Preview & Export',
-                          style: Theme.of(context).textTheme.titleLarge
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-
                         const SizedBox(height: 16),
-
-                        Row(
+                        Column(
                           children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  if (idState.selectedType == IdType.student) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const StudentPreviewScreen(),
-                                      ),
-                                    );
-                                  } else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const TeacherPreviewScreen(),
-                                      ),
-                                    );
-                                  }
-                                },
-                                icon: const Icon(Icons.preview),
-                                label: const Text('Preview Cards'),
-                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      if (idState.selectedType ==
+                                          IdType.student) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const StudentPreviewScreen(),
+                                          ),
+                                        );
+                                      } else {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const TeacherPreviewScreen(),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.preview),
+                                    label: const Text('Preview Cards'),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  try {
-                                    String path;
-                                    if (idState.selectedType ==
-                                        IdType.student) {
-                                      path =
-                                          await PdfExporter.exportStudentCards(
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () async {
+                                      try {
+                                        String path;
+                                        if (idState.selectedType ==
+                                            IdType.student) {
+                                          path = await PdfExporter
+                                              .exportStudentCards(
                                             idState.students,
                                           );
-                                    } else {
-                                      path =
-                                          await PdfExporter.exportTeacherCards(
+                                        } else {
+                                          path = await PdfExporter
+                                              .exportTeacherCards(
                                             idState.teachers,
                                           );
-                                    }
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('PDF exported to: $path'),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Export failed: $e'),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  }
-                                },
-                                icon: const Icon(Icons.download),
-                                label: const Text('Export PDF'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary,
-                                  foregroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.onSecondary,
+                                        }
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content:
+                                                Text('PDF exported to: $path'),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('Export failed: $e'),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.picture_as_pdf),
+                                    label: const Text('Export PDF'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.secondary,
+                                      foregroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.onSecondary,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () async {
+                                      try {
+                                        List<String> paths;
+                                        if (idState.selectedType ==
+                                            IdType.student) {
+                                          // For main screen, we need to create keys temporarily
+                                          final keys = List.generate(
+                                              idState.students.length,
+                                              (_) => GlobalKey());
+                                          paths = await ImageExporter
+                                              .exportAllStudentCards(
+                                            idState.students,
+                                            keys,
+                                          );
+                                        } else {
+                                          final keys = List.generate(
+                                              idState.teachers.length,
+                                              (_) => GlobalKey());
+                                          paths = await ImageExporter
+                                              .exportAllTeacherCards(
+                                            idState.teachers,
+                                            keys,
+                                          );
+                                        }
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                'Images exported successfully!'),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('Export failed: $e'),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.image),
+                                    label: const Text('Export Images'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.tertiary,
+                                      foregroundColor: Theme.of(
+                                        context,
+                                      ).colorScheme.onTertiary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../data/models/student.dart';
 import '../data/models/teacher.dart';
 
@@ -21,10 +22,27 @@ class ImageExporter {
       );
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-      final dir = await getApplicationDocumentsDirectory();
+      // Try to get external storage directory first, fallback to application documents
+      Directory? dir;
+      try {
+        dir = await getExternalStorageDirectory();
+      } catch (e) {
+        dir = await getApplicationDocumentsDirectory();
+      }
+
+      final downloadDir = Directory('${dir!.path}/Download');
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
+
       final fileName = 'student_${student.regNo}.png';
-      final file = File('${dir.path}/$fileName');
+      final file = File('${downloadDir.path}/$fileName');
       await file.writeAsBytes(pngBytes);
+
+      // Share the file
+      await Share.shareXFiles([XFile(file.path)],
+          text: 'Student ID Card - ${student.name}');
+
       return file.path;
     } catch (e) {
       throw Exception('Failed to export image: $e');
@@ -44,10 +62,27 @@ class ImageExporter {
       );
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-      final dir = await getApplicationDocumentsDirectory();
+      // Try to get external storage directory first, fallback to application documents
+      Directory? dir;
+      try {
+        dir = await getExternalStorageDirectory();
+      } catch (e) {
+        dir = await getApplicationDocumentsDirectory();
+      }
+
+      final downloadDir = Directory('${dir!.path}/Download');
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
+
       final fileName = 'teacher_${teacher.staffId}.png';
-      final file = File('${dir.path}/$fileName');
+      final file = File('${downloadDir.path}/$fileName');
       await file.writeAsBytes(pngBytes);
+
+      // Share the file
+      await Share.shareXFiles([XFile(file.path)],
+          text: 'Teacher ID Card - ${teacher.name}');
+
       return file.path;
     } catch (e) {
       throw Exception('Failed to export image: $e');
