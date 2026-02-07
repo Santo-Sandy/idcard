@@ -20,17 +20,13 @@ class ImageExporter {
       ByteData? byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
       );
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
+      Uint8List pngBytes = byteData?.buffer.asUint8List() ?? Uint8List(0);
 
-      // Try to get external storage directory first, fallback to application documents
-      Directory? dir;
-      try {
-        dir = await getExternalStorageDirectory();
-      } catch (e) {
-        dir = await getApplicationDocumentsDirectory();
-      }
+      // Get downloads directory
+      Directory? dir = await getDownloadsDirectory();
+      dir ??= await getApplicationDocumentsDirectory();
 
-      final downloadDir = Directory('${dir!.path}/Download');
+      final downloadDir = Directory('${dir.path}/Download');
       if (!await downloadDir.exists()) {
         await downloadDir.create(recursive: true);
       }
@@ -60,17 +56,13 @@ class ImageExporter {
       ByteData? byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
       );
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
+      Uint8List pngBytes = byteData?.buffer.asUint8List() ?? Uint8List(0);
 
-      // Try to get external storage directory first, fallback to application documents
-      Directory? dir;
-      try {
-        dir = await getExternalStorageDirectory();
-      } catch (e) {
-        dir = await getApplicationDocumentsDirectory();
-      }
+      // Get downloads directory
+      Directory? dir = await getDownloadsDirectory();
+      dir ??= await getApplicationDocumentsDirectory();
 
-      final downloadDir = Directory('${dir!.path}/Download');
+      final downloadDir = Directory('${dir.path}/Download');
       if (!await downloadDir.exists()) {
         await downloadDir.create(recursive: true);
       }
@@ -89,31 +81,25 @@ class ImageExporter {
     }
   }
 
-  static Future<List<String>> exportAllStudentCards(
+  static Future<void> exportAllStudentCards(
     List<Student> students,
     List<GlobalKey> keys,
   ) async {
-    List<String> paths = [];
     for (int i = 0; i < students.length; i++) {
       if (i < keys.length) {
-        final path = await exportStudentCardAsImage(students[i], keys[i]);
-        paths.add(path);
+        await exportStudentCardAsImage(students[i], keys[i]);
       }
     }
-    return paths;
   }
 
-  static Future<List<String>> exportAllTeacherCards(
+  static Future<void> exportAllTeacherCards(
     List<Teacher> teachers,
     List<GlobalKey> keys,
   ) async {
-    List<String> paths = [];
     for (int i = 0; i < teachers.length; i++) {
       if (i < keys.length) {
-        final path = await exportTeacherCardAsImage(teachers[i], keys[i]);
-        paths.add(path);
+        await exportTeacherCardAsImage(teachers[i], keys[i]);
       }
     }
-    return paths;
   }
 }

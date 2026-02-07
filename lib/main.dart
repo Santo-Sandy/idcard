@@ -28,27 +28,27 @@ class MainApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.poppinsTextTheme(),
         cardTheme: CardThemeData(
-          elevation: 12,
-          shadowColor: Colors.teal.withOpacity(0.3),
+          elevation: 8,
+          shadowColor: Colors.teal.withValues(alpha: 0.2),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            elevation: 6,
-            shadowColor: Colors.teal.withOpacity(0.3),
+            elevation: 4,
+            shadowColor: Colors.teal.withValues(alpha: 0.2),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           ),
         ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.teal.shade700,
           foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: Colors.teal.withOpacity(0.3),
+          shadowColor: Colors.teal.withValues(alpha: 0.2),
         ),
       ),
       home: const HomeScreen(),
@@ -107,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 colors: [
                   Theme.of(
                     context,
-                  ).colorScheme.primaryContainer.withOpacity(0.1),
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.1),
                   Theme.of(context).colorScheme.surface,
                 ],
               ),
@@ -127,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         BoxShadow(
                           color: Theme.of(
                             context,
-                          ).colorScheme.shadow.withOpacity(0.1),
+                          ).colorScheme.shadow.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -156,7 +156,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimaryContainer
-                                        .withOpacity(0.8),
+                                        .withValues(alpha: 0.8),
                                   ),
                         ),
                       ],
@@ -179,39 +179,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     children: [
                       Expanded(
                         child: Card(
-                          child: RadioListTile<IdType>(
-                            title: const Text('👨‍🎓 Student IDs'),
-                            subtitle: const Text('Generate student ID cards'),
-                            value: IdType.student,
-                            groupValue: idState.selectedType,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(idProvider.notifier).setIdType(value);
-                              }
-                            },
+                          child: InkWell(
+                            onTap: () => ref
+                                .read(idProvider.notifier)
+                                .setIdType(IdType.student),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  Radio<IdType>(
+                                    value: IdType.student,
+                                    groupValue: idState.selectedType,
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        ref
+                                            .read(idProvider.notifier)
+                                            .setIdType(value);
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('👨‍🎓 Student IDs',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        const Text('Generate student ID cards',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Card(
-                          child: RadioListTile<IdType>(
-                            title: const Text('👨‍🏫 Teacher IDs'),
-                            subtitle: const Text('Generate teacher ID cards'),
-                            value: IdType.teacher,
-                            groupValue: idState.selectedType,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(idProvider.notifier).setIdType(value);
-                              }
-                            },
+                          child: InkWell(
+                            onTap: () => ref
+                                .read(idProvider.notifier)
+                                .setIdType(IdType.teacher),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  Radio<IdType>(
+                                    value: IdType.teacher,
+                                    groupValue: idState.selectedType,
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        ref
+                                            .read(idProvider.notifier)
+                                            .setIdType(value);
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('👨‍🏫 Teacher IDs',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        const Text('Generate teacher ID cards',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 32),
 
                   // Upload Section
                   Text(
@@ -229,7 +283,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       border: Border.all(
                         color: Theme.of(
                           context,
-                        ).colorScheme.outline.withOpacity(0.3),
+                        ).colorScheme.outline.withValues(alpha: 0.3),
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(16),
@@ -269,17 +323,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             if (result != null) {
                               final file = result.files.first;
                               if (file.bytes != null) {
-                                await ref
-                                    .read(idProvider.notifier)
-                                    .loadExcelFile(file.bytes!);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Excel file loaded successfully!',
+                                // Show loading indicator
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        CircularProgressIndicator(),
+                                        SizedBox(height: 16),
+                                        Text('Processing Excel file...'),
+                                      ],
                                     ),
-                                    behavior: SnackBarBehavior.floating,
                                   ),
                                 );
+
+                                try {
+                                  await ref
+                                      .read(idProvider.notifier)
+                                      .loadExcelFile(file.bytes!);
+                                  if (mounted) {
+                                    Navigator.pop(
+                                        context); // Close loading dialog
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Excel file loaded successfully!',
+                                        ),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (mounted) {
+                                    Navigator.pop(
+                                        context); // Close loading dialog
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('Failed to load file: $e'),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                }
                               }
                             }
                           },
@@ -401,14 +489,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   child: ElevatedButton.icon(
                                     onPressed: () async {
                                       try {
-                                        List<String> paths;
                                         if (idState.selectedType ==
                                             IdType.student) {
                                           // For main screen, we need to create keys temporarily
                                           final keys = List.generate(
                                               idState.students.length,
                                               (_) => GlobalKey());
-                                          paths = await ImageExporter
+                                          await ImageExporter
                                               .exportAllStudentCards(
                                             idState.students,
                                             keys,
@@ -417,28 +504,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           final keys = List.generate(
                                               idState.teachers.length,
                                               (_) => GlobalKey());
-                                          paths = await ImageExporter
+                                          await ImageExporter
                                               .exportAllTeacherCards(
                                             idState.teachers,
                                             keys,
                                           );
                                         }
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Images exported successfully!'),
-                                            behavior: SnackBarBehavior.floating,
-                                          ),
-                                        );
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Images exported successfully!'),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        }
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text('Export failed: $e'),
-                                            behavior: SnackBarBehavior.floating,
-                                          ),
-                                        );
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content:
+                                                  Text('Export failed: $e'),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     icon: const Icon(Icons.image),
