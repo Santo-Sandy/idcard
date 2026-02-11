@@ -65,22 +65,14 @@ class _StudentPreviewScreenState extends ConsumerState<StudentPreviewScreen> {
                 );
               } catch (e) {
                 if (!mounted) return;
-                messenger.showSnackBar(SnackBar(content: Text('Export failed: $e')));
+                messenger
+                    .showSnackBar(SnackBar(content: Text('Export failed: $e')));
               }
             },
           ),
           IconButton(
             icon: const Icon(Icons.image),
             onPressed: () => _showExportDialog(context, students),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => showAboutDialog(
-              context: context,
-              applicationName: 'ID Card Generator',
-              applicationVersion: '1.0.0',
-              applicationLegalese: '© 2024 ID Card Generator Team',
-            ),
           ),
         ],
       ),
@@ -89,7 +81,8 @@ class _StudentPreviewScreenState extends ConsumerState<StudentPreviewScreen> {
           return GridView.builder(
             padding: const EdgeInsets.all(16),
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200, // Flexible width for real ID card size
+              maxCrossAxisExtent:
+                  250, // Fixed 2 columns for consistent display across platforms
               childAspectRatio: 0.6, // Portrait ID card aspect ratio
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,

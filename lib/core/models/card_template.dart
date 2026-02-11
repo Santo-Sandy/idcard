@@ -26,22 +26,22 @@ extension CardTemplateExtension on CardTemplate {
   Color get primaryColor {
     switch (this) {
       case CardTemplate.classic:
-        return _lightTealPrimary;
+        return const Color.fromARGB(255, 146, 255, 250);
       case CardTemplate.modern:
-        return Colors.blue;
+        return const Color.fromARGB(255, 127, 187, 236);
       case CardTemplate.minimal:
-        return Colors.grey;
+        return const Color.fromARGB(255, 241, 157, 157);
     }
   }
 
   Color get secondaryColor {
     switch (this) {
       case CardTemplate.classic:
-        return _lightTealSecondary;
+        return const Color.fromARGB(255, 24, 95, 95);
       case CardTemplate.modern:
-        return Colors.blue.shade700;
+        return const Color.fromARGB(255, 18, 58, 99);
       case CardTemplate.minimal:
-        return Colors.grey.shade700;
+        return const Color.fromARGB(255, 109, 29, 29);
     }
   }
 }

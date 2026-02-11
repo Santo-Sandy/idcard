@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:idcard/exports/productionpdf.dart';
 import 'core/providers/id_provider.dart';
 import 'features/student_id/student_preview.dart';
 import 'features/teacher_id/teacher_preview.dart';
@@ -91,7 +94,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('🪪 ID Card Generator'),
+            title: const Text('ID Card Generator'),
             elevation: 0,
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -311,50 +314,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               allowedExtensions: ['xlsx', 'xls'],
                             );
                             if (!mounted) return;
-
                             if (result != null) {
                               final file = result.files.first;
+                              Uint8List bytes;
                               if (file.bytes != null) {
-                                // Show loading indicator
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => const AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        CircularProgressIndicator(),
-                                        SizedBox(height: 16),
-                                        Text('Processing Excel file...'),
-                                      ],
-                                    ),
+                                bytes = file.bytes!;
+                              } else if (file.path != null) {
+                                // For platforms where bytes are not provided, read from path
+                                bytes = await File(file.path!).readAsBytes();
+                              } else {
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Unable to read file'),
+                                    behavior: SnackBarBehavior.floating,
                                   ),
                                 );
+                                return;
+                              }
 
-                                try {
-                                  await ref
-                                      .read(idProvider.notifier)
-                                      .loadExcelFile(file.bytes!);
-                                  if (!mounted) return;
-                                  navigator.pop(); // Close loading dialog
-                                  messenger.showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Excel file loaded successfully!',
-                                      ),
-                                      behavior: SnackBarBehavior.floating,
+                              // Show loading indicator
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const AlertDialog(
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircularProgressIndicator(),
+                                      SizedBox(height: 16),
+                                      Text('Processing Excel file...'),
+                                    ],
+                                  ),
+                                ),
+                              );
+
+                              try {
+                                await ref
+                                    .read(idProvider.notifier)
+                                    .loadExcelFile(bytes);
+                                if (!mounted) return;
+                                navigator.pop(); // Close loading dialog
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Excel file loaded successfully!',
                                     ),
-                                  );
-                                } catch (e) {
-                                  if (!mounted) return;
-                                  navigator.pop(); // Close loading dialog
-                                  messenger.showSnackBar(
-                                    SnackBar(
-                                      content: Text('Failed to load file: $e'),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                }
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              } catch (e) {
+                                if (!mounted) return;
+                                navigator.pop(); // Close loading dialog
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to load file: $e'),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
                               }
                             }
                           },
@@ -437,6 +453,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                               .exportStudentCards(
                                             idState.students,
                                           );
+                                          path = await ProductionPdfExporter
+                                              .exportSingleCard(
+                                                  idState.students.first);
                                         } else {
                                           path = await PdfExporter
                                               .exportTeacherCards(

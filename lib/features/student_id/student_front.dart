@@ -11,7 +11,7 @@ class StudentFrontCard extends StatelessWidget {
     return Card(
       elevation: 8,
       shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(color: Colors.white),

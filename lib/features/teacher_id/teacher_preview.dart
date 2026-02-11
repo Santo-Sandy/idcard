@@ -65,7 +65,8 @@ class _TeacherPreviewScreenState extends ConsumerState<TeacherPreviewScreen> {
                 );
               } catch (e) {
                 if (!mounted) return;
-                messenger.showSnackBar(SnackBar(content: Text('Export failed: $e')));
+                messenger
+                    .showSnackBar(SnackBar(content: Text('Export failed: $e')));
               }
             },
           ),
@@ -79,8 +80,9 @@ class _TeacherPreviewScreenState extends ConsumerState<TeacherPreviewScreen> {
         builder: (context, constraints) {
           return GridView.builder(
             padding: const EdgeInsets.all(16),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200, // Flexible width for real ID card size
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount:
+                  2, // Fixed 2 columns for consistent display across platforms
               childAspectRatio: 0.6, // Portrait ID card aspect ratio
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
