@@ -17,7 +17,8 @@ class ExportOptionsDialog extends StatefulWidget {
 class _ExportOptionsDialogState extends State<ExportOptionsDialog> {
   String _selectedFormat = 'PNG';
   double _quality = 1.0;
-  bool _shareAfterExport = true;
+  // "Download" is the default; sharing is optional.
+  bool _shareAfterExport = false;
 
   @override
   Widget build(BuildContext context) {

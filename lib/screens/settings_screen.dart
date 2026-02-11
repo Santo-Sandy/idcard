@@ -107,15 +107,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ['PNG', 'JPEG', 'PDF'].map((format) {
-            return RadioListTile<String>(
+            final selected = _exportFormat == format;
+            return ListTile(
               title: Text(format),
-              value: format,
-              groupValue: _exportFormat,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _exportFormat = value);
-                  Navigator.pop(context);
-                }
+              trailing: selected ? const Icon(Icons.check) : null,
+              onTap: () {
+                setState(() => _exportFormat = format);
+                Navigator.pop(context);
               },
             );
           }).toList(),

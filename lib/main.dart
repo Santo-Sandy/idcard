@@ -6,7 +6,6 @@ import 'core/providers/id_provider.dart';
 import 'features/student_id/student_preview.dart';
 import 'features/teacher_id/teacher_preview.dart';
 import 'exports/pdf_export.dart';
-import 'exports/image_export.dart';
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));
@@ -17,19 +16,17 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const lightTeal = Color(0xFF20B2AA);
     return MaterialApp(
       title: 'ID Card Generator',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.light,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: lightTeal),
         useMaterial3: true,
         textTheme: GoogleFonts.poppinsTextTheme(),
         cardTheme: CardThemeData(
           elevation: 8,
-          shadowColor: Colors.teal.withValues(alpha: 0.2),
+          shadowColor: lightTeal.withValues(alpha: 0.2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -37,7 +34,7 @@ class MainApp extends StatelessWidget {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 4,
-            shadowColor: Colors.teal.withValues(alpha: 0.2),
+            shadowColor: lightTeal.withValues(alpha: 0.2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -45,10 +42,10 @@ class MainApp extends StatelessWidget {
           ),
         ),
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.teal.shade700,
-          foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: Colors.teal.withValues(alpha: 0.2),
+          shadowColor: lightTeal.withValues(alpha: 0.15),
+          backgroundColor: lightTeal.withValues(alpha: 0.12),
+          foregroundColor: const Color(0xFF0B2E2B),
         ),
       ),
       home: const HomeScreen(),
@@ -187,16 +184,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               padding: const EdgeInsets.all(16),
                               child: Row(
                                 children: [
-                                  Radio<IdType>(
-                                    value: IdType.student,
-                                    groupValue: idState.selectedType,
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        ref
-                                            .read(idProvider.notifier)
-                                            .setIdType(value);
-                                      }
-                                    },
+                                  Icon(
+                                    idState.selectedType == IdType.student
+                                        ? Icons.check_circle
+                                        : Icons.circle_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -231,16 +224,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               padding: const EdgeInsets.all(16),
                               child: Row(
                                 children: [
-                                  Radio<IdType>(
-                                    value: IdType.teacher,
-                                    groupValue: idState.selectedType,
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        ref
-                                            .read(idProvider.notifier)
-                                            .setIdType(value);
-                                      }
-                                    },
+                                  Icon(
+                                    idState.selectedType == IdType.teacher
+                                        ? Icons.check_circle
+                                        : Icons.circle_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -314,11 +303,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () async {
+                            final messenger = ScaffoldMessenger.of(context);
+                            final navigator = Navigator.of(context);
                             FilePickerResult? result =
                                 await FilePicker.platform.pickFiles(
                               type: FileType.custom,
                               allowedExtensions: ['xlsx', 'xls'],
                             );
+                            if (!mounted) return;
 
                             if (result != null) {
                               final file = result.files.first;
@@ -343,30 +335,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   await ref
                                       .read(idProvider.notifier)
                                       .loadExcelFile(file.bytes!);
-                                  if (mounted) {
-                                    Navigator.pop(
-                                        context); // Close loading dialog
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Excel file loaded successfully!',
-                                        ),
-                                        behavior: SnackBarBehavior.floating,
+                                  if (!mounted) return;
+                                  navigator.pop(); // Close loading dialog
+                                  messenger.showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Excel file loaded successfully!',
                                       ),
-                                    );
-                                  }
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
                                 } catch (e) {
-                                  if (mounted) {
-                                    Navigator.pop(
-                                        context); // Close loading dialog
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Failed to load file: $e'),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  }
+                                  if (!mounted) return;
+                                  navigator.pop(); // Close loading dialog
+                                  messenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to load file: $e'),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
                                 }
                               }
                             }
@@ -440,6 +427,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 Expanded(
                                   child: ElevatedButton.icon(
                                     onPressed: () async {
+                                      final messenger =
+                                          ScaffoldMessenger.of(context);
                                       try {
                                         String path;
                                         if (idState.selectedType ==
@@ -454,8 +443,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             idState.teachers,
                                           );
                                         }
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        messenger.showSnackBar(
                                           SnackBar(
                                             content:
                                                 Text('PDF exported to: $path'),
@@ -463,8 +451,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           ),
                                         );
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        messenger.showSnackBar(
                                           SnackBar(
                                             content: Text('Export failed: $e'),
                                             behavior: SnackBarBehavior.floating,
@@ -488,51 +475,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 Expanded(
                                   child: ElevatedButton.icon(
                                     onPressed: () async {
-                                      try {
-                                        if (idState.selectedType ==
-                                            IdType.student) {
-                                          // For main screen, we need to create keys temporarily
-                                          final keys = List.generate(
-                                              idState.students.length,
-                                              (_) => GlobalKey());
-                                          await ImageExporter
-                                              .exportAllStudentCards(
-                                            idState.students,
-                                            keys,
-                                          );
-                                        } else {
-                                          final keys = List.generate(
-                                              idState.teachers.length,
-                                              (_) => GlobalKey());
-                                          await ImageExporter
-                                              .exportAllTeacherCards(
-                                            idState.teachers,
-                                            keys,
-                                          );
-                                        }
-                                        if (mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Images exported successfully!'),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                            ),
-                                          );
-                                        }
-                                      } catch (e) {
-                                        if (mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content:
-                                                  Text('Export failed: $e'),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                            ),
-                                          );
-                                        }
+                                      // Image export needs rendered widgets (RepaintBoundary).
+                                      // Send the user to the preview screen where cards exist.
+                                      if (idState.selectedType ==
+                                          IdType.student) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const StudentPreviewScreen(),
+                                          ),
+                                        );
+                                      } else {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const TeacherPreviewScreen(),
+                                          ),
+                                        );
                                       }
                                     },
                                     icon: const Icon(Icons.image),

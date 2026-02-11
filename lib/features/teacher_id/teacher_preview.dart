@@ -56,19 +56,16 @@ class _TeacherPreviewScreenState extends ConsumerState<TeacherPreviewScreen> {
           IconButton(
             icon: const Icon(Icons.picture_as_pdf),
             onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
               try {
                 await PdfExporter.exportTeacherCards(teachers);
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('PDF exported successfully!')),
-                  );
-                }
+                if (!mounted) return;
+                messenger.showSnackBar(
+                  const SnackBar(content: Text('PDF exported successfully!')),
+                );
               } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Export failed: $e')),
-                  );
-                }
+                if (!mounted) return;
+                messenger.showSnackBar(SnackBar(content: Text('Export failed: $e')));
               }
             },
           ),
@@ -80,19 +77,55 @@ class _TeacherPreviewScreenState extends ConsumerState<TeacherPreviewScreen> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
           return GridView.builder(
             padding: const EdgeInsets.all(16),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              childAspectRatio: 1.6, // Standard ID card aspect ratio
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200, // Flexible width for real ID card size
+              childAspectRatio: 0.6, // Portrait ID card aspect ratio
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
             itemCount: teachers.length,
             itemBuilder: (context, index) {
-              return TeacherFlipCard(
-                  teacher: teachers[index], repaintKey: _cardKeys[index]);
+              final teacher = teachers[index];
+              final key = _cardKeys[index];
+              return Stack(
+                children: [
+                  TeacherFlipCard(teacher: teacher, repaintKey: key),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton.filledTonal(
+                      tooltip: 'Download',
+                      icon: const Icon(Icons.download),
+                      onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          final path =
+                              await ImageExporter.exportTeacherCardAsImage(
+                            teacher,
+                            key,
+                            shareAfterExport: false,
+                          );
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text('Saved to: $path'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        } catch (e) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text('Download failed: $e'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              );
             },
           );
         },
@@ -122,31 +155,36 @@ class _TeacherPreviewScreenState extends ConsumerState<TeacherPreviewScreen> {
             ),
           );
 
+          final navigator = Navigator.of(context);
+          final messenger = ScaffoldMessenger.of(context);
+
           try {
             if (format == 'PDF') {
               await PdfExporter.exportTeacherCards(teachers);
             } else {
-              await ImageExporter.exportAllTeacherCards(teachers, _cardKeys);
-            }
-            if (mounted) {
-              Navigator.pop(context); // Close progress dialog
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('$format exported successfully!'),
-                  behavior: SnackBarBehavior.floating,
-                ),
+              await ImageExporter.exportAllTeacherCards(
+                teachers,
+                _cardKeys,
+                shareAfterExport: shareAfterExport,
               );
             }
+            if (!mounted) return;
+            navigator.pop(); // Close progress dialog
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text('$format exported successfully!'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           } catch (e) {
-            if (mounted) {
-              Navigator.pop(context); // Close progress dialog
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Export failed: $e'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
+            if (!mounted) return;
+            navigator.pop(); // Close progress dialog
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text('Export failed: $e'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         },
       ),

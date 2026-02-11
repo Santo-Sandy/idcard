@@ -28,9 +28,12 @@ class TeacherFlipCard extends StatelessWidget {
   }
 
   Widget _buildFrontCard(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final primary = template.primaryColor;
+    final secondary = template.secondaryColor;
     return Card(
       elevation: 12,
-      shadowColor: template.primaryColor.withValues(alpha: 0.3),
+      shadowColor: primary.withValues(alpha: 0.22),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         width: double.infinity,
@@ -41,8 +44,8 @@ class TeacherFlipCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              template.primaryColor.withValues(alpha: 0.1),
-              Colors.white,
+              primary.withValues(alpha: 0.12),
+              cs.surface,
             ],
           ),
         ),
@@ -53,7 +56,7 @@ class TeacherFlipCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: template.primaryColor.withValues(alpha: 0.1),
+                color: primary.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -64,12 +67,12 @@ class TeacherFlipCard extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: template.primaryColor.withValues(alpha: 0.2),
+                      color: primary.withValues(alpha: 0.18),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Icon(
                       Icons.school,
-                      color: template.primaryColor,
+                      color: secondary,
                       size: 24,
                     ),
                   ),
@@ -84,14 +87,14 @@ class TeacherFlipCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.bold,
-                            color: template.primaryColor,
+                            color: secondary,
                           ),
                         ),
                         Text(
                           '(Affiliated to XYZ University)',
                           style: TextStyle(
                             fontSize: 6,
-                            color: template.primaryColor.withValues(alpha: 0.8),
+                            color: secondary.withValues(alpha: 0.8),
                           ),
                         ),
                       ],
@@ -108,7 +111,7 @@ class TeacherFlipCard extends StatelessWidget {
               'College Address Line 1, City, State - PIN',
               style: TextStyle(
                 fontSize: 6,
-                color: template.primaryColor.withValues(alpha: 0.7),
+                color: cs.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -117,16 +120,16 @@ class TeacherFlipCard extends StatelessWidget {
 
             // Center Photo
             Container(
-              width: 80,
-              height: 100,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 border: Border.all(
-                    color: template.primaryColor.withValues(alpha: 0.5),
+                    color: secondary.withValues(alpha: 0.45),
                     width: 2),
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: template.primaryColor.withValues(alpha: 0.2),
+                    color: secondary.withValues(alpha: 0.16),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -137,11 +140,11 @@ class TeacherFlipCard extends StatelessWidget {
                 child: teacher.photo != null
                     ? Image.memory(teacher.photo!, fit: BoxFit.cover)
                     : Container(
-                        color: template.primaryColor.withValues(alpha: 0.1),
+                        color: primary.withValues(alpha: 0.10),
                         child: Icon(
                           Icons.person,
-                          size: 40,
-                          color: template.primaryColor,
+                          size: 30,
+                          color: secondary,
                         ),
                       ),
               ),
@@ -154,10 +157,10 @@ class TeacherFlipCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Column(
                 children: [
-                  _buildDetailRow('Name:', teacher.name),
-                  _buildDetailRow('Staff ID:', teacher.staffId),
-                  _buildDetailRow('Department:', teacher.department),
-                  _buildDetailRow('Blood Group:', teacher.bloodGroup),
+                  _buildDetailRow(context, 'Name:', teacher.name),
+                  _buildDetailRow(context, 'Staff ID:', teacher.staffId),
+                  _buildDetailRow(context, 'Department:', teacher.department),
+                  _buildDetailRow(context, 'Blood Group:', teacher.bloodGroup),
                 ],
               ),
             ),
@@ -167,12 +170,12 @@ class TeacherFlipCard extends StatelessWidget {
             // Principal Signature at bottom
             Column(
               children: [
-                const Text(
+                Text(
                   'PRINCIPAL',
                   style: TextStyle(
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal,
+                    color: secondary,
                   ),
                 ),
                 Container(
@@ -180,15 +183,15 @@ class TeacherFlipCard extends StatelessWidget {
                   height: 30,
                   margin: const EdgeInsets.only(top: 4),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.teal.shade300),
+                    border: Border.all(color: primary.withValues(alpha: 0.55)),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Signature',
                       style: TextStyle(
                         fontSize: 6,
-                        color: Colors.teal,
+                        color: secondary.withValues(alpha: 0.75),
                       ),
                     ),
                   ),
@@ -203,7 +206,7 @@ class TeacherFlipCard extends StatelessWidget {
               '*If found please return to College Office*',
               style: TextStyle(
                 fontSize: 6,
-                color: template.primaryColor,
+                color: secondary,
                 fontStyle: FontStyle.italic,
               ),
               textAlign: TextAlign.center,
@@ -215,9 +218,12 @@ class TeacherFlipCard extends StatelessWidget {
   }
 
   Widget _buildBackCard(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final primary = template.primaryColor;
+    final secondary = template.secondaryColor;
     return Card(
       elevation: 8,
-      shadowColor: template.primaryColor.withValues(alpha: 0.2),
+      shadowColor: primary.withValues(alpha: 0.18),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         width: double.infinity,
@@ -228,8 +234,8 @@ class TeacherFlipCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              template.primaryColor.withValues(alpha: 0.05),
-              Colors.white,
+              primary.withValues(alpha: 0.10),
+              cs.surface,
             ],
           ),
         ),
@@ -237,55 +243,55 @@ class TeacherFlipCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Center(
+            Center(
               child: Text(
                 'TEACHER ID CARD',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.teal,
+                  color: secondary,
                 ),
               ),
             ),
             const SizedBox(height: 8),
 
             // Contact Information
-            const Text(
+            Text(
               'Contact Information',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: secondary,
               ),
             ),
             const SizedBox(height: 6),
-            _buildBackDetailRow('Mobile:', teacher.mobile),
-            _buildBackDetailRow('Email:', teacher.email),
+            _buildBackDetailRow(context, 'Mobile:', teacher.mobile),
+            _buildBackDetailRow(context, 'Email:', teacher.email),
 
             const SizedBox(height: 8),
 
             // Address
-            const Text(
+            Text(
               'Address',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: secondary,
               ),
             ),
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.teal.shade50,
+                color: primary.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.teal.shade200),
+                border: Border.all(color: primary.withValues(alpha: 0.35)),
               ),
               child: Text(
                 teacher.address,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 8,
-                  color: Colors.black87,
+                  color: cs.onSurface,
                   height: 1.4,
                 ),
               ),
@@ -294,19 +300,19 @@ class TeacherFlipCard extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Professional Information
-            const Text(
+            Text(
               'Professional Information',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: secondary,
               ),
             ),
             const SizedBox(height: 4),
-            _buildBackDetailRow('Designation:', teacher.designation),
-            _buildBackDetailRow('Department:', teacher.department),
-            _buildBackDetailRow('Staff ID:', teacher.staffId),
-            _buildBackDetailRow('Blood Group:', teacher.bloodGroup),
+            _buildBackDetailRow(context, 'Designation:', teacher.designation),
+            _buildBackDetailRow(context, 'Department:', teacher.department),
+            _buildBackDetailRow(context, 'Staff ID:', teacher.staffId),
+            _buildBackDetailRow(context, 'Blood Group:', teacher.bloodGroup),
 
             const Spacer(),
 
@@ -314,11 +320,11 @@ class TeacherFlipCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.teal.shade50,
+                color: primary.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.teal.shade200),
+                border: Border.all(color: primary.withValues(alpha: 0.35)),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -326,7 +332,7 @@ class TeacherFlipCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
-                      color: Colors.teal,
+                      color: secondary,
                     ),
                   ),
                   SizedBox(height: 2),
@@ -334,7 +340,7 @@ class TeacherFlipCard extends StatelessWidget {
                     'In case of emergency, please contact the college office or use the information provided above.',
                     style: TextStyle(
                       fontSize: 7,
-                      color: Colors.black87,
+                      color: cs.onSurfaceVariant,
                       height: 1.3,
                     ),
                   ),
@@ -347,7 +353,7 @@ class TeacherFlipCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -357,19 +363,19 @@ class TeacherFlipCard extends StatelessWidget {
             width: 50,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 8,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: template.secondaryColor,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 8,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -378,7 +384,7 @@ class TeacherFlipCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBackDetailRow(String label, String value) {
+  Widget _buildBackDetailRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
@@ -388,19 +394,19 @@ class TeacherFlipCard extends StatelessWidget {
             width: 45,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: template.secondaryColor,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 9,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
